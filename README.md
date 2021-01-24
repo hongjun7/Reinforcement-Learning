@@ -2,6 +2,8 @@
 
 Resources for Reinforcement Learning
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Papers
 * Deep Q-learning Network (DQN) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Q-Learning.pdf)
 * Policy Gradient (PG) [[Paper]](https://https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Policy-Gradient-Methods-for-RL_NIPS1999.pdf)
