@@ -61,15 +61,16 @@ class ValueNetwork(object):
         return self.model(obs)
 
 
-class A2C(object):
-    def __init__(self, obs_dim, act_dim, lr, gamma):
+class PPO(object):
+    def __init__(self, obs_dim, act_dim, lr_actor, lr_critic, gamma, clip_range, update_ep_epochs):
         self.obs_dim = obs_dim
         self.act_dim = act_dim
-        self.lr = lr
         self.gamma = gamma
+        self.clip_range = clip_range
+        self.update_ep_epochs = update_ep_epochs
 
-        self.actor = ActorNetwork(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.n, lr=self.lr)
-        self.critic = ValueNetwork(obs_dim=env.observation_space.shape[0], lr=self.lr)
+        self.actor = ActorNetwork(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.n, lr=lr_actor)
+        self.critic = ValueNetwork(obs_dim=env.observation_space.shape[0], lr=lr_critic)
         self.memory = Memory()
 
     def step(self, obs):
@@ -84,20 +85,23 @@ class A2C(object):
         obs = np.vstack(self.memory.ep_obs)
         act = np.array(self.memory.ep_act)
         rwd = np.array(self.memory.ep_rwd)
+        old_pi = self.actor.get_cross_entropy(obs, act)
         q_value = self.compute_q_value(last_value, done, rwd)
 
-        with tf.GradientTape() as tape:
-            advantage = (q_value - self.critic.step(obs))
-            cross_entropy = self.actor.get_cross_entropy(obs, act)
-            actor_loss = tf.reduce_mean(cross_entropy * advantage)
-            actor_grad = tape.gradient(actor_loss, self.actor.model.trainable_variables)
-            self.actor.optimizer.apply_gradients(zip(actor_grad, self.actor.model.trainable_variables))
+        for epoch in range(self.update_ep_epochs):
+            with tf.GradientTape(persistent=True) as tape:
+                advantage = (q_value - self.critic.step(obs))
+                critic_loss = tf.reduce_mean(tf.square(advantage))
+                critic_grad = tape.gradient(critic_loss, self.critic.model.trainable_variables)
+                self.critic.optimizer.apply_gradients(zip(critic_grad, self.critic.model.trainable_variables))
 
-        with tf.GradientTape() as tape:
-            advantage = (q_value - self.critic.step(obs))
-            critic_loss = tf.reduce_mean(tf.square(advantage))
-            critic_grad = tape.gradient(critic_loss, self.critic.model.trainable_variables)
-            self.critic.optimizer.apply_gradients(zip(critic_grad, self.critic.model.trainable_variables))
+                new_pi = self.actor.get_cross_entropy(obs, act)
+                # subtracting the logs is equal to dividing the values and then canceling the log with exp.
+                ratio = tf.exp(new_pi - old_pi)
+                clip_ratio = tf.clip_by_value(ratio, 1. - self.clip_range, 1. + self.clip_range)
+                actor_loss = tf.reduce_mean(tf.minimum(clip_ratio, ratio) * advantage)
+                actor_grad = tape.gradient(actor_loss, self.actor.model.trainable_variables)
+                self.actor.optimizer.apply_gradients(zip(actor_grad, self.actor.model.trainable_variables))
 
         self.memory.reset()
 
@@ -117,7 +121,8 @@ for gpu in tf.config.experimental.list_physical_devices("GPU"):
 
 episode_length = 1000
 
-agent = A2C(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.n, lr=0.01, gamma=0.99)
+agent = PPO(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.n,
+            lr_actor=0.001, lr_critic=0.002, gamma=0.99, clip_range=0.2, update_ep_epochs=10)
 
 for episode in range(episode_length):
     obs_cur = env.reset()

@@ -3,7 +3,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, optimizers
-tf.enable_eager_execution()
 
 
 class Memory:
@@ -26,7 +25,7 @@ class ActorNetwork(object):
         self.model = keras.Sequential(
             [
                 layers.Dense(obs_dim, activation="tanh",
-                             kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3)),
+                             kernel_initializer=keras.initializers.glorot_uniform()),
                 layers.Dense(32, None,
                              kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3)),
                 layers.Dense(act_dim)
