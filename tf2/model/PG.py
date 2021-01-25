@@ -1,4 +1,3 @@
-import gym
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -46,14 +45,14 @@ class ActorNetwork(object):
         return tf.nn.sparse_softmax_cross_entropy_with_logits(logits=act_prob, labels=act)
 
 
-class PG(object):
+class Model(object):
     def __init__(self, obs_dim, act_dim, lr, gamma):
         self.obs_dim = obs_dim
         self.act_dim = act_dim
         self.lr = lr
         self.gamma = gamma
 
-        self.actor = ActorNetwork(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.n, lr=self.lr)
+        self.actor = ActorNetwork(obs_dim=obs_dim, act_dim=act_dim, lr=self.lr)
         self.memory = Memory()
 
     def step(self, obs):
@@ -83,32 +82,3 @@ class PG(object):
             ret_rwd[t] = R
         ret_rwd = np.array(ret_rwd)
         return (ret_rwd - np.mean(ret_rwd)) / np.std(ret_rwd)
-
-
-env = gym.make('CartPole-v0').unwrapped
-env.seed(1)
-for gpu in tf.config.experimental.list_physical_devices("GPU"):
-    tf.config.experimental.set_memory_growth(gpu, True)
-
-episode_length = 1000
-
-agent = PG(obs_dim=env.observation_space.shape[0], act_dim=env.action_space.n, lr=0.01, gamma=0.99)
-
-for episode in range(episode_length):
-    obs_cur = env.reset()
-    episode_reward = 0
-
-    while True:
-        action = agent.step(obs_cur)
-        obs_nxt, reward, done, _ = env.step(action)
-
-        agent.memory.store(obs_cur, action, reward)
-
-        obs_cur = obs_nxt
-        episode_reward += reward
-
-        if done:
-            agent.learn()
-            print('episode: %i' % episode, ", reward: %i" % episode_reward)
-            break
-env.close()
