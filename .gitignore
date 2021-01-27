@@ -1,2 +1,3 @@
 # Default ignored files
+/.idea/
 /tf2/model/__pycache__/

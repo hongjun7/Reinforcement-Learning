@@ -1,113 +1,106 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow_probability.python.distributions import Categorical
 from tensorflow.keras import layers, optimizers
 
 
 class Memory:
     def __init__(self):
         self.ep_obs, self.ep_act, self.ep_rwd = [], [], []
+        self.ep_logprob = []
 
-    def store(self, obs, act, rwd):
+    def store(self, obs, act, rwd, logprob):
         self.ep_obs.append(obs)
         self.ep_act.append(act)
         self.ep_rwd.append(rwd)
+        self.ep_logprob.append(logprob)
 
     def reset(self):
         self.ep_obs, self.ep_act, self.ep_rwd = [], [], []
+        self.ep_logprob = []
 
 
-class ActorNetwork(object):
+class ActorCritic(tf.Module):
     def __init__(self, obs_dim, act_dim, lr):
+        super(ActorCritic, self).__init__()
         self.obs_dim = obs_dim
         self.act_dim = act_dim
-        self.model = keras.Sequential(
+        self.actor = keras.Sequential(
             [
-                layers.Dense(obs_dim, activation=tf.nn.tanh,
-                             kernel_initializer=keras.initializers.glorot_uniform()),
-                layers.Dense(10, kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3)),
-                layers.Dense(act_dim)
+                layers.Dense(obs_dim),
+                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
+                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
+                layers.Dense(act_dim, activation="softmax")
             ]
         )
-        self.optimizer = optimizers.Adam(learning_rate=lr)
-
-    def step(self, obs):
-        return self.model(obs)
-
-    def choose_action(self, obs):
-        act_prob = self.step(obs)
-        all_act_prob = tf.nn.softmax(act_prob)
-        return all_act_prob
-
-    def get_cross_entropy(self, obs, act):
-        act_prob = self.step(obs)
-        return tf.nn.sparse_softmax_cross_entropy_with_logits(logits=act_prob, labels=act)
-
-
-class ValueNetwork(object):
-    def __init__(self, obs_dim, lr):
-        self.model = keras.Sequential(
+        self.critic = keras.Sequential(
             [
-                layers.Dense(obs_dim, activation=tf.nn.tanh,
-                             kernel_initializer=keras.initializers.glorot_uniform()),
-                layers.Dense(10, kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3)),
+                layers.Dense(obs_dim),
+                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
+                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
                 layers.Dense(1)
             ]
         )
         self.optimizer = optimizers.Adam(learning_rate=lr)
 
     def step(self, obs):
-        return self.model(obs)
+        if obs.ndim < 2:
+            obs = obs[np.newaxis, :]
+        action_probs = self.actor(obs)
+        dist = Categorical(probs=action_probs)
+        action = dist.sample()
+        return action.numpy()[0], dist.log_prob(action)
+
+    def infer(self, obs, act):
+        action_probs = self.actor(obs)
+        dist = Categorical(probs=action_probs)
+        action_logprobs = dist.log_prob(act)
+        dist_entropy = dist.entropy()
+        q_value = self.critic(obs)
+        return action_logprobs, tf.squeeze(q_value), dist_entropy
 
 
 class Model(object):
-    def __init__(self, obs_dim, act_dim, lr_actor, lr_critic, gamma, clip_range, update_ep_epochs):
+    def __init__(self, obs_dim, act_dim, lr, gamma, clip_range, update_ep_epochs):
         self.obs_dim = obs_dim
         self.act_dim = act_dim
         self.gamma = gamma
         self.clip_range = clip_range
+        self.MseLoss = keras.losses.mean_squared_error
         self.update_ep_epochs = update_ep_epochs
 
-        self.actor = ActorNetwork(obs_dim=obs_dim, act_dim=act_dim, lr=lr_actor)
-        self.critic = ValueNetwork(obs_dim=obs_dim, lr=lr_critic)
+        self.policy = ActorCritic(obs_dim=obs_dim, act_dim=act_dim, lr=lr)
         self.memory = Memory()
 
     def step(self, obs):
-        if obs.ndim < 2:
-            obs = obs[np.newaxis, :]
-        prob_weights = self.actor.choose_action(obs).numpy()
-        act = np.random.choice(range(prob_weights.shape[1]), p=prob_weights.ravel())
-        val = self.critic.step(obs)
-        return act, val
+        return self.policy.step(obs)
 
-    def learn(self, last_value, done):
-        obs = np.vstack(self.memory.ep_obs)
-        act = np.array(self.memory.ep_act)
-        rwd = np.array(self.memory.ep_rwd)
-        old_pi = self.actor.get_cross_entropy(obs, act)
-        q_value = self.compute_q_value(last_value, done, rwd)
+    def learn(self):
+        old_obs = np.vstack(self.memory.ep_obs)
+        old_act = np.array(self.memory.ep_act)
+        old_logprob = np.array(self.memory.ep_logprob).ravel()
+        
+        rwd = []
+        discounted_rwd = 0
+        for reward in reversed(self.memory.ep_rwd):
+            discounted_rwd = reward + (self.gamma*discounted_rwd)
+            rwd.insert(0, discounted_rwd)
+        rwd = tf.constant(rwd, dtype=tf.float32)
+        rwd = (rwd - tf.reduce_mean(rwd)) / tf.math.reduce_std(rwd)
 
         for epoch in range(self.update_ep_epochs):
-            with tf.GradientTape(persistent=True) as tape:
-                advantage = (q_value - self.critic.step(obs))
-                critic_loss = tf.reduce_mean(tf.square(advantage))
-                critic_grad = tape.gradient(critic_loss, self.critic.model.trainable_variables)
-                self.critic.optimizer.apply_gradients(zip(critic_grad, self.critic.model.trainable_variables))
-
-                new_pi = self.actor.get_cross_entropy(obs, act)
-                # subtracting the logs is equal to dividing the values and then canceling the log with exp.
-                ratio = tf.exp(new_pi - old_pi)
-                clip_ratio = tf.clip_by_value(ratio, 1. - self.clip_range, 1. + self.clip_range)
-                actor_loss = tf.reduce_mean(tf.minimum(clip_ratio, ratio) * advantage)
-                actor_grad = tape.gradient(actor_loss, self.actor.model.trainable_variables)
-                self.actor.optimizer.apply_gradients(zip(actor_grad, self.actor.model.trainable_variables))
+            with tf.GradientTape() as tape:
+                logprobs, q_value, entropy = self.policy.infer(old_obs, old_act)
+                ratio = tf.exp(logprobs - tf.stop_gradient(old_logprob))
+                advantages = rwd - tf.stop_gradient(q_value)
+                
+                # surrogate losses
+                surrogate_loss1 = ratio * advantages
+                surrogate_loss2 = tf.clip_by_value(ratio, 1-self.clip_range, 1+self.clip_range) * advantages
+                
+                loss = -tf.minimum(surrogate_loss1, surrogate_loss2) + 0.5*self.MseLoss(q_value, rwd) - 0.01*entropy
+                gradient = tape.gradient(tf.reduce_mean(loss), self.policy.trainable_variables)
+                self.policy.optimizer.apply_gradients(zip(gradient, self.policy.trainable_variables))
 
         self.memory.reset()
-
-    def compute_q_value(self, last_value, done, rwd):
-        q_value = np.zeros_like(rwd)
-        v = 0 if done else last_value
-        for t in reversed(range(len(rwd))):
-            v = v * self.gamma + rwd[t]
-            q_value[t] = v
-        return q_value[:, np.newaxis]
