@@ -23,10 +23,8 @@ class ActorNetwork(object):
         self.act_dim = act_dim
         self.model = keras.Sequential(
             [
-                layers.Dense(obs_dim, activation="tanh",
-                             kernel_initializer=keras.initializers.glorot_uniform()),
-                layers.Dense(32, None,
-                             kernel_initializer=tf.random_normal_initializer(mean=0, stddev=0.3)),
+                layers.Dense(obs_dim, None, kernel_initializer=keras.initializers.he_uniform()),
+                layers.Dense(32, None, kernel_initializer=keras.initializers.he_uniform()),
                 layers.Dense(act_dim)
             ]
         )
@@ -36,13 +34,13 @@ class ActorNetwork(object):
         return self.model(obs)
 
     def choose_action(self, obs):
-        act_prob = self.step(obs)
-        all_act_prob = tf.nn.softmax(act_prob)
-        return all_act_prob
+        logit = self.step(obs)
+        prob = tf.nn.softmax(logit).numpy()
+        return np.random.choice(range(prob.shape[1]), p=prob.ravel())
 
     def get_cross_entropy(self, obs, act):
-        act_prob = self.step(obs)
-        return tf.nn.sparse_softmax_cross_entropy_with_logits(logits=act_prob, labels=act)
+        logit = self.step(obs)
+        return tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logit, labels=act)
 
 
 class Model(object):
@@ -58,8 +56,7 @@ class Model(object):
     def step(self, obs):
         if obs.ndim < 2:
             obs = obs[np.newaxis, :]
-        prob_weights = self.actor.choose_action(obs).numpy()
-        return np.random.choice(range(prob_weights.shape[1]), p=prob_weights.ravel())
+        return self.actor.choose_action(obs)
 
     def learn(self):
         obs = np.vstack(self.memory.ep_obs)
