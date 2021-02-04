@@ -29,16 +29,16 @@ class ActorCritic(tf.Module):
         self.actor = keras.Sequential(
             [
                 layers.Dense(obs_dim),
-                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
-                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
-                layers.Dense(act_dim, activation="softmax")
+                layers.Dense(64, activation=layers.LeakyReLU(), kernel_initializer=keras.initializers.he_uniform()),
+                layers.Dense(64, activation=layers.LeakyReLU(), kernel_initializer=keras.initializers.he_uniform()),
+                layers.Dense(act_dim, activation=layers.LeakyReLU())
             ]
         )
         self.critic = keras.Sequential(
             [
                 layers.Dense(obs_dim),
-                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
-                layers.Dense(64, activation="tanh", kernel_initializer=keras.initializers.glorot_uniform()),
+                layers.Dense(64, activation=layers.LeakyReLU(), kernel_initializer=keras.initializers.he_uniform()),
+                layers.Dense(64, activation=layers.LeakyReLU(), kernel_initializer=keras.initializers.he_uniform()),
                 layers.Dense(1)
             ]
         )
@@ -47,14 +47,14 @@ class ActorCritic(tf.Module):
     def step(self, obs):
         if obs.ndim < 2:
             obs = obs[np.newaxis, :]
-        action_probs = self.actor(obs)
-        dist = Categorical(probs=action_probs)
+        action_logits = self.actor(obs)
+        dist = Categorical(logits=action_logits)
         action = dist.sample()
         return action.numpy()[0], dist.log_prob(action)
 
     def infer(self, obs, act):
-        action_probs = self.actor(obs)
-        dist = Categorical(probs=action_probs)
+        action_logits = self.actor(obs)
+        dist = Categorical(logits=action_logits)
         action_logprobs = dist.log_prob(act)
         dist_entropy = dist.entropy()
         q_value = self.critic(obs)
@@ -93,13 +93,15 @@ class Model(object):
             with tf.GradientTape() as tape:
                 logprobs, q_value, entropy = self.policy.infer(old_obs, old_act)
                 ratio = tf.exp(logprobs - tf.stop_gradient(old_logprob))
-                advantages = rwd - tf.stop_gradient(q_value)
+                advantages = (rwd - tf.stop_gradient(q_value)).numpy()
+                advantages = (advantages - np.mean(advantages)) / np.std(advantages)
+                advantages = tf.constant(advantages, dtype=tf.float32)
                 
                 # surrogate losses
-                surrogate_loss1 = ratio * advantages
-                surrogate_loss2 = tf.clip_by_value(ratio, 1-self.clip_range, 1+self.clip_range) * advantages
+                L1 = ratio * advantages
+                L2 = tf.clip_by_value(ratio, 1-self.clip_range, 1+self.clip_range) * advantages
                 
-                loss = -tf.minimum(surrogate_loss1, surrogate_loss2) + 0.5*self.MseLoss(q_value, rwd) - 0.01*entropy
+                loss = -tf.minimum(L1, L2) + 0.5*self.MseLoss(q_value, rwd) - 0.001*entropy
                 gradient = tape.gradient(tf.reduce_mean(loss), self.policy.trainable_variables)
                 self.policy.optimizer.apply_gradients(zip(gradient, self.policy.trainable_variables))
 
