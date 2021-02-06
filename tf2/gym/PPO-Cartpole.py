@@ -17,7 +17,7 @@ for episode in range(episode_length):
         action, logprob = agent.step(obs_cur)
         obs_nxt, reward, ep_done, _ = env.step(action)
 
-        agent.memory.store(obs_cur, action, reward, logprob)
+        agent.memory.store(obs_cur, action, reward, ep_done, logprob)
 
         obs_cur = obs_nxt
         episode_reward += reward
