@@ -8,6 +8,11 @@ Resources for Reinforcement Learning
   <img src="https://s2.gifyu.com/images/PPO-LunarLander_v2.gif" alt="LunarLander-v2 with PPO"/>
 </p>
 
+## Lectures
+* Introduction to Reinforcement Learning, David Silver(Deepmind) [[Youtube Link]](https://www.youtube.com/playlist?list=PLqYmG7hTraZDM-OYHWgPebj2MfCFzFObQ) [[Lecture Notes]](https://github.com/hongjun7/Reinforcement-Learning/tree/main/resource/lecture-notes/david-silver)
+* Introduction to Reinforcement Learning, SNU CML [[Youtube Link]](https://www.youtube.com/playlist?list=PLKs7xpqpX1beJ5-EOFDXTVckBQFFyTxUH)
+* CS285 Deep Reinforcement Learning, UC Berkeley [[Link]](http://rail.eecs.berkeley.edu/deeprlcourse/)
+
 ## Papers
 * Deep Q-learning Network (DQN) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Q-Learning.pdf)
 * Policy Gradient (PG) [[Paper]](https://https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Policy-Gradient-Methods-for-RL_NIPS1999.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PG.py)
