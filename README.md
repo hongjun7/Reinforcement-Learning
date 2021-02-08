@@ -5,7 +5,7 @@ Resources for Reinforcement Learning
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-  <img src="https://s2.gifyu.com/images/PPO-LunarLander_v2.gif" alt="LunarLander-v2 with PPO"/>
+   <img src="https://s2.gifyu.com/images/PPO-LunarLander_v2.gif" width="40%"/> <img src="https://s2.gifyu.com/images/PPO-BipedalWalker_v3.gif" width="40%"/>
 </p>
 
 ## Lectures
