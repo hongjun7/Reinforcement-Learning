@@ -5,7 +5,7 @@ Resources for Reinforcement Learning
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-   <img src="https://s2.gifyu.com/images/PPO-LunarLander_v2.gif" width="40%"/> <img src="https://s2.gifyu.com/images/PPO-BipedalWalker_v3.gif" width="40%"/>
+   <img src="https://s2.gifyu.com/images/PG-CartPole.gif" width="30%"/> <img src="https://s2.gifyu.com/images/PPO-LunarLander_v2.gif" width="30%"/> <img src="https://s2.gifyu.com/images/PPO-BipedalWalker_v3.gif" width="30%"/>
 </p>
 
 ## Lectures
@@ -14,7 +14,7 @@ Resources for Reinforcement Learning
 * CS285 Deep Reinforcement Learning, UC Berkeley [[Link]](http://rail.eecs.berkeley.edu/deeprlcourse/)
 
 ## Papers
-* Deep Q-learning Network (DQN) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Q-Learning.pdf)
+* Deep Q-learning Network (DQN) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Q-Learning.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/DQN.py)
 * Policy Gradient (PG) [[Paper]](https://https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Policy-Gradient-Methods-for-RL_NIPS1999.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PG.py)
 * Deterministic Policy Gradient (DPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deterministic-Policy-Gradient.pdf)
 * Deep Deterministic Policy Gradient (DDPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Deterministic-Policy-Gradient.pdf)
