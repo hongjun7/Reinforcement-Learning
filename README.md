@@ -14,12 +14,12 @@ Resources for Reinforcement Learning
 * CS285 Deep Reinforcement Learning, UC Berkeley [[Link]](http://rail.eecs.berkeley.edu/deeprlcourse/)
 
 ## Papers
-* Deep Q-learning Network (DQN) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Q-Learning.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/DQN.py)
-* Policy Gradient (PG) [[Paper]](https://https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Policy-Gradient-Methods-for-RL_NIPS1999.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PG.py)
+* Deep Q-learning Network (DQN) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Q-Learning.pdf)[[PyTorch Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/pytorch/model/DQN.py)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/DQN.py)
+* Policy Gradient (PG) [[Paper]](https://https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Policy-Gradient-Methods-for-RL_NIPS1999.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PG.py)
 * Deterministic Policy Gradient (DPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deterministic-Policy-Gradient.pdf)
-* Deep Deterministic Policy Gradient (DDPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Deterministic-Policy-Gradient.pdf)
-* Asynchronous Methods for Deep Reinforcement Learning (A2C) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Asynchronous-Methods-for-Deep-Reinforcement-Learning.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/A2C.py)
-* Proximal Policy Optimization (PPO) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Proximal-Policy-Optimization.pdf)[[Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PPO.py)
+* Deep Deterministic Policy Gradient (DDPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Deep-Deterministic-Policy-Gradient.pdf)[[PyTorch Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/pytorch/model/DDPG.py)
+* Asynchronous Methods for Deep Reinforcement Learning (A2C) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Asynchronous-Methods-for-Deep-Reinforcement-Learning.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/A2C.py)
+* Proximal Policy Optimization (PPO) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Proximal-Policy-Optimization.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PPO.py)
 * Phasic Policy Gradient (PPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Phasic-Policy-Gradient.pdf)
 * Twin Delayed DDPG (TD3) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Twin-Delayed-DDPG.pdf)
 * Stein Variational Policy Gradient (SVPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Stein-Variational-Policy-Gradient.pdf)
