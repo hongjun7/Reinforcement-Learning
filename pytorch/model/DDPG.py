@@ -96,8 +96,8 @@ class Model(object):
     def train(self, memory):
         s, a, r, s_prime, done_mask = memory.sample(self.batch_size)
 
-        y = r + self.gamma * self.q_target.forward(s_prime, self.mu_target(s_prime)) * done_mask
-        critic_loss = F.mse_loss(y, self.q.forward(s, a))
+        target = r + self.gamma * self.q_target.forward(s_prime, self.mu_target(s_prime)) * done_mask
+        critic_loss = F.mse_loss(target.detach(), self.q.forward(s, a))
 
         self.q_optimizer.zero_grad()
         critic_loss.backward()
