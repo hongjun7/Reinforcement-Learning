@@ -23,3 +23,4 @@ Resources for Reinforcement Learning
 * Phasic Policy Gradient (PPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Phasic-Policy-Gradient.pdf)
 * Twin Delayed DDPG (TD3) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Twin-Delayed-DDPG.pdf)
 * Stein Variational Policy Gradient (SVPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Stein-Variational-Policy-Gradient.pdf)
+* Soft Actor Critic (SAC) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Soft-Actor-Critic.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/SAC.py)
