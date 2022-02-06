@@ -4,10 +4,6 @@ Resources for Reinforcement Learning
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<p align="center">
-   <img src="https://s2.gifyu.com/images/PG-CartPole.gif" width="30%"/> <img src="https://s2.gifyu.com/images/PPO-LunarLander_v2.gif" width="30%"/> <img src="https://s2.gifyu.com/images/PPO-BipedalWalker_v3.gif" width="30%"/>
-</p>
-
 ## Lectures
 * Introduction to Reinforcement Learning, David Silver(Deepmind) [[Youtube Link]](https://www.youtube.com/playlist?list=PLqYmG7hTraZDM-OYHWgPebj2MfCFzFObQ) [[Lecture Notes]](https://github.com/hongjun7/Reinforcement-Learning/tree/main/resource/lecture-notes/david-silver)
 * Introduction to Reinforcement Learning, SNU CML [[Youtube Link]](https://www.youtube.com/playlist?list=PLKs7xpqpX1beJ5-EOFDXTVckBQFFyTxUH)
@@ -21,6 +17,6 @@ Resources for Reinforcement Learning
 * Asynchronous Methods for Deep Reinforcement Learning (A2C) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Asynchronous-Methods-for-Deep-Reinforcement-Learning.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/A2C.py)
 * Proximal Policy Optimization (PPO) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Proximal-Policy-Optimization.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/PPO.py)
 * Phasic Policy Gradient (PPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Phasic-Policy-Gradient.pdf)
-* Twin Delayed DDPG (TD3) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Twin-Delayed-DDPG.pdf)
+* Twin Delayed DDPG (TD3) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Twin-Delayed-DDPG.pdf) [[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/TD3.py)[[PyTorch Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/pytorch/model/TD3.py)
 * Stein Variational Policy Gradient (SVPG) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Stein-Variational-Policy-Gradient.pdf)
 * Soft Actor Critic (SAC) [[Paper]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/resource/papers/Soft-Actor-Critic.pdf)[[TF2 Code]](https://github.com/hongjun7/Reinforcement-Learning/blob/main/tf2/model/SAC.py)
